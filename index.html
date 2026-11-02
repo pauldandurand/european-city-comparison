@@ -61,6 +61,25 @@
     .export { display:inline-flex; gap:7px; align-items:center; justify-content:center; white-space:nowrap; background:transparent; border:1px solid #36556a; border-radius: 9px; color:#d5eff4; padding:10px 13px; cursor:pointer; font-size:.82rem; font-weight:650; }
     .export:hover { background:#18374b; border-color:#5e9aab; }
     .table-scroll { overflow-x: auto; scrollbar-color: #53778a #0b1d30; }
+    /* The in-table header works normally; the duplicate floating header is
+       displayed during page scrolling. This is necessary because a horizontal
+       overflow container prevents CSS position:sticky from tracking the page. */
+    .sticky-floating {
+      position: fixed; top: 0; z-index: 1000;
+      overflow-x: auto; overflow-y: hidden;
+      scrollbar-width: none;
+      border: 1px solid #31546a;
+      border-top: 3px solid var(--accent);
+      background: #0b2236;
+      box-shadow: 0 9px 30px rgba(0,0,0,.55);
+      scrollbar-color: #53778a #0b1d30;
+      overscroll-behavior-x: contain;
+    }
+    .sticky-floating::-webkit-scrollbar { display: none; }
+    .sticky-floating[hidden] { display: none; }
+    .sticky-floating table { margin: 0; }
+    .sticky-floating thead th { border-bottom: 0; }
+
     table { width: 100%; border-collapse: collapse; min-width: 850px; font-variant-numeric: tabular-nums; }
     thead th { background: #0b2236; border-bottom: 1px solid #335a70; padding: 0; text-align: left; white-space:nowrap; }
     thead th:first-child, tbody td:first-child { padding-left: 24px; }
@@ -115,6 +134,7 @@
       thead th button,tbody td,.note-card p,.lede { color:#222; }
       .tools { display:none; }
       .table-scroll { overflow:visible; }
+      .sticky-floating { display:none!important; }
       table { min-width:0; }
       .chips,.topline { display:none; }
     }
@@ -247,13 +267,68 @@
       }
       document.getElementById('count').innerHTML='<strong>'+filtered.length+'</strong> of '+data.length+' cities';
       document.getElementById('sortStatus').textContent='Sorted by '+cols[sortKey]+' · '+(direction===1?'ascending':'descending');
+      syncFloatingHeadSort();
+      scheduleFloatingLayout();
     }
-    document.querySelectorAll('[data-sort]').forEach(button=>button.addEventListener('click',()=>{
-      const next=button.dataset.sort;
+    function changeSort(next) {
       direction=next===sortKey?-direction:1;
       sortKey=next;
       render();
-    }));
+    }
+    document.querySelectorAll('#citiesTable [data-sort]').forEach(button=>button.addEventListener('click',()=>changeSort(button.dataset.sort)));
+
+    // Floating header: remains visible while scrolling past the table's own
+    // heading, aligns each column precisely, and stays in sync horizontally.
+    const scroller=document.querySelector('.table-scroll');
+    const originalTable=document.getElementById('citiesTable');
+    const originalHead=originalTable.tHead;
+    const floating=document.createElement('div');
+    floating.className='sticky-floating';
+    floating.hidden=true;
+    floating.setAttribute('aria-label','Sticky sortable table headings');
+    const floatingTable=document.createElement('table');
+    floatingTable.setAttribute('aria-label','City comparison headings');
+    const floatingCols=document.createElement('colgroup');
+    for(let i=0;i<6;i++) floatingCols.appendChild(document.createElement('col'));
+    floatingTable.appendChild(floatingCols);
+    floatingTable.appendChild(originalHead.cloneNode(true));
+    floating.appendChild(floatingTable);
+    document.body.appendChild(floating);
+    floating.querySelectorAll('[data-sort]').forEach(button=>button.addEventListener('click',()=>changeSort(button.dataset.sort)));
+    function syncFloatingHeadSort(){
+      floating.querySelectorAll('thead th').forEach(th=>{
+        const active=th.dataset.key===sortKey;
+        th.setAttribute('aria-sort',active?(direction===1?'ascending':'descending'):'none');
+        th.querySelector('.sort-icon').textContent=active?(direction===1?'↑':'↓'):'↕';
+      });
+    }
+    function updateFloatingLayout(){
+      const region=scroller.getBoundingClientRect();
+      const header=originalHead.getBoundingClientRect();
+      const table=originalTable.getBoundingClientRect();
+      const visible=header.bottom<=0 && table.bottom>header.height;
+      if(!visible){floating.hidden=true;return;}
+      floating.hidden=false;
+      floating.style.left=region.left+'px';
+      floating.style.width=region.width+'px';
+      const ths=Array.from(originalHead.querySelectorAll('th'));
+      const widths=ths.map(th=>th.getBoundingClientRect().width);
+      const cols=Array.from(floatingCols.children);
+      widths.forEach((w,i)=>{cols[i].style.width=w+'px';});
+      floatingTable.style.width=table.width+'px';
+      floatingTable.style.minWidth=table.width+'px';
+      floating.scrollLeft=scroller.scrollLeft;
+    }
+    let layoutQueued=false;
+    function scheduleFloatingLayout(){
+      if(layoutQueued)return;
+      layoutQueued=true;
+      requestAnimationFrame(()=>{layoutQueued=false;updateFloatingLayout();});
+    }
+    window.addEventListener('scroll',scheduleFloatingLayout,{passive:true});
+    window.addEventListener('resize',scheduleFloatingLayout,{passive:true});
+    scroller.addEventListener('scroll',()=>{if(floating.scrollLeft!==scroller.scrollLeft)floating.scrollLeft=scroller.scrollLeft;},{passive:true});
+    floating.addEventListener('scroll',()=>{if(scroller.scrollLeft!==floating.scrollLeft)scroller.scrollLeft=floating.scrollLeft;},{passive:true});
     search.addEventListener('input',()=>{query=search.value.trim().toLowerCase();render();});
     document.getElementById('csvBtn').addEventListener('click',()=>{
       const activeRows=sortRows(data.filter(r=>(r.city+' '+r.country).toLowerCase().includes(query)));
