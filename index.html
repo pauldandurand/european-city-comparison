@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#071426">
-  <meta name="description" content="Interactive comparison of poverty, education, population, density, housing prices and annual sunshine hours across 20 European cities. Sort and search the data.">
+  <meta name="description" content="Interactive comparison of poverty, education, population, density, housing prices and annual sunshine hours across 21 European cities. Sort and search the data.">
   <title>European Cities | Socioeconomic Comparison</title>
   <style>
     :root {
@@ -100,6 +100,9 @@
     .empty { text-align:center!important; color:var(--muted)!important; padding: 36px!important; }
     .footbar { border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; padding: 14px 25px; color:var(--muted); font-size:.79rem; }
     .footbar strong { color:var(--ink); }
+    .sort-details { display:flex; align-items:center; gap:30px; flex-wrap:wrap; }
+    .density-exception { white-space:nowrap; color:#b4ccdc; font-size:.79rem; }
+    .density-asterisk { font-weight:800; color:var(--accent-strong); }
     .notes { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; margin: 26px 0 22px; }
     .note-card { border: 1px solid #263f53; border-radius: 15px; padding: 23px 24px; background: rgba(11, 30, 48, .70); }
     .note-card h3 { font-size: .9rem; margin:0 0 10px; color: #d8f9f7; }
@@ -153,11 +156,11 @@
     <header class="hero">
       <p class="eyebrow">Urban & socioeconomic indicators</p>
       <h1>How do Europe's <em>cities compare?</em></h1>
-      <p class="lede">Compare poverty, higher education, municipal population, density, housing prices and annual sunshine hours across 20 European cities. Click any column heading to sort.</p>
+      <p class="lede">Compare poverty, higher education, municipal population, density, housing prices and annual sunshine hours across 21 European cities. Click any column heading to sort.</p>
       <div class="chips" aria-label="Dataset overview">
-        <div class="chip"><span class="dot"></span><b>20</b> cities</div>
+        <div class="chip"><span class="dot"></span><b>21</b> cities</div>
         <div class="chip"><span class="dot"></span><b>4</b> countries</div>
-        <div class="chip"><span class="dot"></span> Municipal boundaries</div>
+        <div class="chip"><span class="dot"></span> Municipal population</div>
         <div class="chip"><span class="dot"></span> Click-to-sort data</div>
       </div>
     </header>
@@ -184,22 +187,22 @@
                 <th scope="col" data-key="density" aria-sort="none"><button type="button" data-sort="density">Density (people/km²) <span class="sort-icon" aria-hidden="true">↕</span></button></th>
                 <th scope="col" data-key="rent" aria-sort="none"><button type="button" data-sort="rent" title="Monthly residential rent market estimates, euros per square meter">Rent (€/m²/month) <span class="sort-icon" aria-hidden="true">↕</span></button></th>
                 <th scope="col" data-key="homePrice" aria-sort="none"><button type="button" data-sort="homePrice" title="Indicative residential asking price or estimated apartment value, euros per square meter">Home price (€/m²) <span class="sort-icon" aria-hidden="true">↕</span></button></th>
-                <th scope="col" data-key="sunshineHours" aria-sort="none"><button type="button" data-sort="sunshineHours" title="Modeled annual sunshine hours, 2001–2020 NASA POWER climate normals, airport-area sampling">Sunshine hours / year* <span class="sort-icon" aria-hidden="true">↕</span></button></th>
+                <th scope="col" data-key="sunshineHours" aria-sort="none"><button type="button" data-sort="sunshineHours" title="Sunshine hours; Sunshine Map model 2001–2020 for original cities; Aix uses Météo-France station value">Sunshine hours / year <span class="sort-icon" aria-hidden="true">↕</span></button></th>
               </tr>
             </thead>
             <tbody id="rows"></tbody>
           </table>
         </div>
-        <div class="footbar"><span id="count" aria-live="polite"><strong>20</strong> of 20 cities</span><span id="sortStatus" aria-live="polite">Sorted by poverty rate · ascending</span></div>
+        <div class="footbar"><span id="count" aria-live="polite"><strong>21</strong> of 21 cities</span><div class="sort-details"><span class="density-exception"><span class="density-asterisk">*</span> Broader city center</span><span id="sortStatus" aria-live="polite">Sorted by poverty rate · ascending</span></div></div>
 
       </section>
       <section class="notes" aria-label="Methodology and data notes">
         <div class="note-card">
-          <h3>Annual sunshine: one consistent model for every city</h3>
-          <p><strong>*Sunshine hours/year</strong> are modeled averages rather than counts of fully or predominantly sunny days. All 20 values are embedded in this page and work immediately, even offline; no external weather lookup is required.</p>
-          <p>Source: <strong>Sunshine Map (2026.11)</strong>, based on <strong>NASA POWER climate normals (2001–2020)</strong>. The dataset derives modeled bright-sunshine duration from the NASA POWER clearness index, using airport-area sampling for each destination. This allows one consistent calculation across cities, but is not identical to long-term sunshine-recorder observations or measurements within each city hall boundary. Values are rounded to whole hours.</p>
+          <h3>Annual sunshine: model and Aix station exception</h3>
+          <p><strong>Sunshine hours/year</strong> are annual estimates, not the number of sunny days. All 21 values are embedded in the page for reliable offline operation.</p>
+          <p>The original 20 cities use <strong>Sunshine Map (2026.11)</strong>, modeled from <strong>NASA POWER climate normals (2001–2020)</strong> and sampled around airports. <strong>Aix-en-Provence uses 2,873 hours from a Météo-France station normal (1991–2020)</strong>, because a corresponding Sunshine Map figure could not be verified. Aix therefore is not strictly methodologically comparable in this column. All values are rounded to whole hours.</p>
           <p>The earlier “sunny days ≥60% daylight” measure was removed because historical daily calculations did not reliably complete for all cities; annual sunshine hours are a more reproducible indicator with complete coverage.</p>
-          <p><a href="https://thesunshinemap.com/data/" target="_blank" rel="noopener noreferrer">Data and license (CC BY 4.0)</a> · <a href="https://thesunshinemap.com/about/" target="_blank" rel="noopener noreferrer">NASA POWER source and methodology</a>.</p>
+          <p><a href="https://thesunshinemap.com/data/" target="_blank" rel="noopener noreferrer">Data and license (CC BY 4.0)</a> · <a href="https://thesunshinemap.com/about/" target="_blank" rel="noopener noreferrer">NASA POWER source and methodology</a> · <a href="https://www.destination-de-voyage.com/europe/france/villes-les-plus-ensoleillees/" target="_blank" rel="noopener noreferrer">Aix: Météo-France station normal</a>.</p>
         </div>
         <div class="note-card">
           <h3>Housing prices: municipal market benchmarks</h3>
@@ -208,23 +211,24 @@
         </div>
         <div class="note-card">
           <h3>Municipality boundaries</h3>
-          <p>Population and density refer to the <strong>city proper (municipality)</strong>, not the surrounding metropolitan area. Density divides the municipality's 2023 population by its entire administrative land area, including green space and undeveloped land.</p>
+          <p>Population refers to the <strong>city proper (municipality)</strong>. Density normally divides the 2023 municipal population by full administrative land area, including undeveloped land. <strong>Aix-en-Provence is the sole exception:</strong> its <strong>10,400 people/km²*</strong> refers to the broader city center (26,000 residents / 2.5 km²), including the historic center and the first surrounding ring, as defined in an <a href="https://aupa.fr/wp-content/uploads/2023/01/EMC2-AMP-Mobilite-dans-les-centre-villes-de-Marseille-et-Aix-en-Provence.pdf" target="_blank" rel="noopener noreferrer">AUPA 2019 city-center study</a>. The municipality-wide density would be about 805 people/km². The <strong>* Broader city center</strong> note appears beside the sorting status below the table.</p>
         </div>
         <div class="note-card">
           <h3 class="disclaimer">Cross-country data caution</h3>
           <p>Poverty and higher-education measures are from differing national sources, age groups and years. French poverty is individual disposable-income based, Italy's comparison uses households, and Portugal's is based on declared gross income. The default poverty sort is <strong>numerical, not a harmonized European ranking</strong>.</p>
         </div>
       </section>
-      <div class="footer"><span>Prepared November 2026 · Indicative city-level research, not a property valuation</span><span>Housing: MeilleursAgents &amp; Idealista · Climate: Sunshine Map / NASA POWER (2001–2020)</span></div>
+      <div class="footer"><span>Prepared November 2026 · Indicative city-level research, not a property valuation</span><span>Housing: MeilleursAgents &amp; Idealista · Climate: Sunshine Map / NASA POWER; Aix: Météo-France</span></div>
     </main>
   </div>
   <script>
     'use strict';
     // Socioeconomic data: original city-proper comparison.
     // Housing: MeilleursAgents (FR, Nov 2026), Idealista (ES/PT/IT, Sep 2026).
-    // Sunshine: modeled 2001–2020 annual hours from Sunshine Map / NASA POWER. No network calls.
+    // Sunshine: original 20 modeled 2001–2020 from Sunshine Map / NASA POWER; Aix is Météo-France station-based. No network calls.
     const data = [
       {city:'Valencia',country:'Spain',poverty:15.6,education:40.4,population:807693,density:5998,rent:16.3,homePrice:3473,sunshineHours:2894},
+      {city:'Aix-en-Provence',country:'France',poverty:16.4,education:53.3,population:149695,density:10400,rent:18.5,homePrice:5368,sunshineHours:2873,densityException:true},
       {city:'Barcelona',country:'Spain',poverty:16.4,education:46.8,population:1660122,density:16292,rent:20.1,homePrice:5462,sunshineHours:2700},
       {city:'Paris',country:'France',poverty:17.0,education:65.9,population:2103778,density:19960,rent:33.2,homePrice:9633,sunshineHours:1734},
       {city:'Florence',country:'Italy',poverty:17.4,education:26.3,population:363837,density:3556,rent:21.7,homePrice:4800,sunshineHours:2390},
@@ -268,10 +272,12 @@
         const fragment=document.createDocumentFragment();
         for(const r of filtered){
           const tr=document.createElement('tr');
-          const values=[r.city,r.poverty.toFixed(1)+'%',r.education.toFixed(1)+'%',fmtInt.format(r.population),fmtInt.format(r.density),'€'+r.rent.toFixed(1),'€'+fmtInt.format(r.homePrice),fmtInt.format(r.sunshineHours)];
+          const values=[r.city,r.poverty.toFixed(1)+'%',r.education.toFixed(1)+'%',fmtInt.format(r.population),fmtInt.format(r.density)+(r.densityException?'*':''),'€'+r.rent.toFixed(1),'€'+fmtInt.format(r.homePrice),fmtInt.format(r.sunshineHours)];
           for(const [i,value] of values.entries()){
             const td=document.createElement('td');
             td.textContent=value;
+            if(i===4 && r.densityException) td.title='Broader city center: 26,000 people over 2.5 km²; municipality-wide density is ~805 people/km².';
+            if(i===7 && r.city==='Aix-en-Provence') td.title='Aix sunshine: 2,873 hours from a Météo-France station normal (1991–2020), not NASA POWER modeled data.';
             if(i===0){const tag=document.createElement('span');tag.className='country';tag.textContent=r.country;td.appendChild(tag);}
             if(Object.keys(cols)[i]===sortKey) td.classList.add('highlight');
             tr.appendChild(td);
@@ -352,7 +358,7 @@
     search.addEventListener('input',()=>{query=search.value.trim().toLowerCase();render();});
     document.getElementById('csvBtn').addEventListener('click',()=>{
       const activeRows=sortRows(data.filter(r=>(r.city+' '+r.country).toLowerCase().includes(query)));
-      const records=[['City','Country','Poverty rate (%)','Higher education (%)','Population','Density (people/km2)','Rent (EUR/m2/month)','Home price (EUR/m2)','Sunshine hours per year (NASA POWER modeled 2001-2020)'],...activeRows.map(r=>[r.city,r.country,r.poverty,r.education,r.population,r.density,r.rent,r.homePrice,r.sunshineHours])];
+      const records=[['City','Country','Poverty rate (%)','Higher education (%)','Population','Density (people/km2)','Rent (EUR/m2/month)','Home price (EUR/m2)','Sunshine hours per year (NASA POWER modeled 2001-2020)'],...activeRows.map(r=>[r.city,r.country,r.poverty,r.education,r.population,r.densityException?(r.density+'*'):r.density,r.rent,r.homePrice,r.sunshineHours])];
       const csv=records.map(record=>record.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
       const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
       const url=URL.createObjectURL(blob);
