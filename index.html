@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#071426">
-  <meta name="description" content="Interactive comparison of poverty, higher education, population, area and density across 20 European cities. Sort and search the data.">
+  <meta name="description" content="Interactive comparison of poverty, higher education, population, density and approximate annual sunny days across 20 European cities. Sort and search the data.">
   <title>European Cities | Socioeconomic Comparison</title>
   <style>
     :root {
@@ -150,7 +150,7 @@
     <header class="hero">
       <p class="eyebrow">Urban & socioeconomic indicators</p>
       <h1>How do Europe's <em>cities compare?</em></h1>
-      <p class="lede">Explore population, urban density, poverty and education across 20 cities in France, Spain, Portugal and Italy. Select any column heading to reorder the table.</p>
+      <p class="lede">Explore poverty, education, population, urban density and approximate sunny days across 20 cities in France, Spain, Portugal and Italy. Select any column heading to reorder the table.</p>
       <div class="chips" aria-label="Dataset overview">
         <div class="chip"><span class="dot"></span><b>20</b> cities</div>
         <div class="chip"><span class="dot"></span><b>4</b> countries</div>
@@ -178,8 +178,8 @@
                 <th scope="col" data-key="poverty" aria-sort="ascending"><button type="button" data-sort="poverty">Poverty rate <span class="sort-icon" aria-hidden="true">↑</span></button></th>
                 <th scope="col" data-key="education" aria-sort="none"><button type="button" data-sort="education">Higher education <span class="sort-icon" aria-hidden="true">↕</span></button></th>
                 <th scope="col" data-key="population" aria-sort="none"><button type="button" data-sort="population">Population <span class="sort-icon" aria-hidden="true">↕</span></button></th>
-                <th scope="col" data-key="area" aria-sort="none"><button type="button" data-sort="area">Area (km²) <span class="sort-icon" aria-hidden="true">↕</span></button></th>
                 <th scope="col" data-key="density" aria-sort="none"><button type="button" data-sort="density">Density (people/km²) <span class="sort-icon" aria-hidden="true">↕</span></button></th>
+                <th scope="col" data-key="sunnyDays" aria-sort="none"><button type="button" data-sort="sunnyDays" title="Approximate annual days with sunshine. Methods vary by country; see methodology below.">Sunny days / year* <span class="sort-icon" aria-hidden="true">↕</span></button></th>
               </tr>
             </thead>
             <tbody id="rows"></tbody>
@@ -189,9 +189,10 @@
       </section>
       <section class="notes" aria-label="Methodology and data notes">
         <div class="note-card">
-          <h3>What the geographic numbers mean</h3>
-          <p><strong>Population, land area and density use municipality (city proper) boundaries</strong>, not contiguous urbanized areas or metropolitan commuting zones. Density is the population divided by the municipality's entire land area, including open and undeveloped spaces.</p>
-          <p>Population refers to 2023; density is calculated from the displayed population and area and rounded to the nearest person per km².</p>
+          <h3>Geography and sunshine</h3>
+          <p><strong>Population and density use municipality (city proper) boundaries</strong>, not metro areas. Density divides residents by total municipal land area, including open and undeveloped spaces; population is from 2023.</p>
+          <p><strong>* Sunny days are approximate, not internationally standardized.</strong> For French cities, the figures add Météo-France's historic days of strong and weak sunshine (1991–2000). For cities elsewhere, they use approximate clear/sunny-day estimates published by CostTrek. Different sunshine thresholds mean these numbers <strong>must not be treated as strictly comparable</strong>.</p>
+          <p>Climate references: <a href="https://www.currentresults.com/Weather/France/annual-days-of-sunshine.php" target="_blank" rel="noopener noreferrer">France (Météo-France via Current Results)</a> · <a href="https://costtrek.com/en/best/sunniest/europe" target="_blank" rel="noopener noreferrer">Spain, Portugal, Italy (CostTrek)</a>.</p>
         </div>
         <div class="note-card">
           <h3 class="disclaimer">Important cross-country limitation</h3>
@@ -199,35 +200,38 @@
           <p>Higher-education definitions and age groups also differ. Poverty figures span 2021–2025 and education figures 2021–2023. Treat them as indicative, not strictly comparable.</p>
         </div>
       </section>
-      <div class="footer"><span>Compiled from the prior France Research city comparison; figures are rounded.</span><span>Data references: INSEE · INE/PORDATA · ISTAT · Spanish municipal statistics · cited Italian and Portuguese poverty studies</span></div>
+      <div class="footer"><span>Compiled from the prior France Research city comparison; figures are rounded.</span><span>Data: INSEE · INE/PORDATA · ISTAT · Spanish municipal statistics · Météo-France · CostTrek</span></div>
     </main>
   </div>
   <script>
     'use strict';
-    // Source dataset: the 20-city municipal comparison discussed in the conversation.
+    // Source socioeconomic data: the 20-city municipal comparison discussed in the conversation.
+    // Approximate sunny days: French strong+weak sunshine days (Météo-France 1991–2000),
+    // and published clear/sunny estimates from CostTrek for Italy, Spain and Portugal.
+    // These climate definitions are not strictly interchangeable.
     const data = [
-      {city:'Valencia',country:'Spain',poverty:15.6,education:40.4,population:807693,area:134.65,density:5998},
-      {city:'Barcelona',country:'Spain',poverty:16.4,education:46.8,population:1660122,area:101.90,density:16292},
-      {city:'Paris',country:'France',poverty:17.0,education:65.9,population:2103778,area:105.40,density:19960},
-      {city:'Florence',country:'Italy',poverty:17.4,education:26.3,population:363837,area:102.32,density:3556},
-      {city:'Lyon',country:'France',poverty:18.0,education:58.6,population:519127,area:47.87,density:10845},
-      {city:'Milan',country:'Italy',poverty:18.4,education:30.3,population:1371850,area:181.67,density:7551},
-      {city:'Bordeaux',country:'France',poverty:19.0,education:58.0,population:267991,area:49.36,density:5429},
-      {city:'Nantes',country:'France',poverty:19.0,education:55.0,population:327734,area:65.19,density:5027},
-      {city:'Madrid',country:'Spain',poverty:19.4,education:45.3,population:3332035,area:604.45,density:5513},
-      {city:'Rome',country:'Italy',poverty:20.9,education:25.6,population:2754719,area:1287.36,density:2140},
-      {city:'Porto',country:'Portugal',poverty:22.4,education:35.3,population:248769,area:41.42,density:6006},
-      {city:'Rennes',country:'France',poverty:23.0,education:53.3,population:230890,area:50.39,density:4582},
-      {city:'Nice',country:'France',poverty:23.0,education:38.8,population:357737,area:71.92,density:4974},
-      {city:'Grenoble',country:'France',poverty:24.0,education:52.1,population:156140,area:18.13,density:8612},
-      {city:'Toulouse',country:'France',poverty:24.0,education:55.2,population:514819,area:118.30,density:4352},
-      {city:'Lisbon',country:'Portugal',poverty:24.5,education:41.2,population:567131,area:100.05,density:5668},
-      {city:'Marseille',country:'France',poverty:28.0,education:36.5,population:886040,area:240.62,density:3682},
-      {city:'Lille',country:'France',poverty:29.0,education:52.2,population:238246,area:34.83,density:6840},
-      {city:'Strasbourg',country:'France',poverty:30.0,education:46.6,population:293771,area:78.26,density:3754},
-      {city:'Montpellier',country:'France',poverty:31.0,education:48.8,population:310240,area:56.88,density:5454}
+      {city:'Valencia',country:'Spain',poverty:15.6,education:40.4,population:807693,density:5998,sunnyDays:300},
+      {city:'Barcelona',country:'Spain',poverty:16.4,education:46.8,population:1660122,density:16292,sunnyDays:250},
+      {city:'Paris',country:'France',poverty:17.0,education:65.9,population:2103778,density:19960,sunnyDays:203},
+      {city:'Florence',country:'Italy',poverty:17.4,education:26.3,population:363837,density:3556,sunnyDays:240},
+      {city:'Lyon',country:'France',poverty:18.0,education:58.6,population:519127,density:10845,sunnyDays:209},
+      {city:'Milan',country:'Italy',poverty:18.4,education:30.3,population:1371850,density:7551,sunnyDays:130},
+      {city:'Bordeaux',country:'France',poverty:19.0,education:58.0,population:267991,density:5429,sunnyDays:192},
+      {city:'Nantes',country:'France',poverty:19.0,education:55.0,population:327734,density:5027,sunnyDays:192},
+      {city:'Madrid',country:'Spain',poverty:19.4,education:45.3,population:3332035,density:5513,sunnyDays:250},
+      {city:'Rome',country:'Italy',poverty:20.9,education:25.6,population:2754719,density:2140,sunnyDays:200},
+      {city:'Porto',country:'Portugal',poverty:22.4,education:35.3,population:248769,density:6006,sunnyDays:220},
+      {city:'Rennes',country:'France',poverty:23.0,education:53.3,population:230890,density:4582,sunnyDays:191},
+      {city:'Nice',country:'France',poverty:23.0,education:38.8,population:357737,density:4974,sunnyDays:211},
+      {city:'Grenoble',country:'France',poverty:24.0,education:52.1,population:156140,density:8612,sunnyDays:210},
+      {city:'Toulouse',country:'France',poverty:24.0,education:55.2,population:514819,density:4352,sunnyDays:203},
+      {city:'Lisbon',country:'Portugal',poverty:24.5,education:41.2,population:567131,density:5668,sunnyDays:260},
+      {city:'Marseille',country:'France',poverty:28.0,education:36.5,population:886040,density:3682,sunnyDays:230},
+      {city:'Lille',country:'France',poverty:29.0,education:52.2,population:238246,density:6840,sunnyDays:199},
+      {city:'Strasbourg',country:'France',poverty:30.0,education:46.6,population:293771,density:3754,sunnyDays:220},
+      {city:'Montpellier',country:'France',poverty:31.0,education:48.8,population:310240,density:5454,sunnyDays:222}
     ];
-    const cols = {city:'City',poverty:'Poverty rate',education:'Higher education',population:'Population',area:'Area',density:'Density'};
+    const cols = {city:'City',poverty:'Poverty rate',education:'Higher education',population:'Population',density:'Density',sunnyDays:'Sunny days per year*'};
     const fmtInt = new Intl.NumberFormat('en-US',{maximumFractionDigits:0});
     let sortKey='poverty', direction=1, query='';
     const body = document.getElementById('rows');
@@ -248,7 +252,7 @@
         const fragment=document.createDocumentFragment();
         for(const r of filtered){
           const tr=document.createElement('tr');
-          const values=[r.city,r.poverty.toFixed(1)+'%',r.education.toFixed(1)+'%',fmtInt.format(r.population),r.area.toFixed(2),fmtInt.format(r.density)];
+          const values=[r.city,r.poverty.toFixed(1)+'%',r.education.toFixed(1)+'%',fmtInt.format(r.population),fmtInt.format(r.density),'~'+fmtInt.format(r.sunnyDays)];
           for(const [i,value] of values.entries()){
             const td=document.createElement('td');
             td.textContent=value;
@@ -332,7 +336,7 @@
     search.addEventListener('input',()=>{query=search.value.trim().toLowerCase();render();});
     document.getElementById('csvBtn').addEventListener('click',()=>{
       const activeRows=sortRows(data.filter(r=>(r.city+' '+r.country).toLowerCase().includes(query)));
-      const records=[['City','Country','Poverty rate (%)','Higher education (%)','Population','Area (km2)','Density (people/km2)'],...activeRows.map(r=>[r.city,r.country,r.poverty,r.education,r.population,r.area,r.density])];
+      const records=[['City','Country','Poverty rate (%)','Higher education (%)','Population','Density (people/km2)','Approx sunny days per year'],...activeRows.map(r=>[r.city,r.country,r.poverty,r.education,r.population,r.density,r.sunnyDays])];
       const csv=records.map(record=>record.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
       const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
       const url=URL.createObjectURL(blob);
